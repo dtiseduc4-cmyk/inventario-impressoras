@@ -1,38 +1,23 @@
-// script.js - Firebase Firestore
+// script_lista.js - Firebase Firestore para lista.html
 
-// Cadastro de impressoras
-const form = document.getElementById('formCadastro');
-if(form){
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-    const modelo = form.modelo.value.trim();
-    const toner = form.toner.value.trim();
-    const escola = form.escola.value.trim();
-    const propriedade = form.propriedade.value;
-    if(!modelo || !toner || !escola){ alert('Preencha todos os campos obrigatórios.'); return; }
-    await db.collection('impressoras').add({ modelo, toner, escola, propriedade, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-    alert('Impressora salva com sucesso!');
-    form.reset();
-    window.location.href='lista.html';
-  });
-  document.getElementById('limparForm')?.addEventListener('click', ()=>form.reset());
-}
-
-// Lista de impressoras
 const tbody = document.querySelector('#tabela tbody');
 const searchInput = document.getElementById('search');
 const filterSelect = document.getElementById('filterPropriedade');
 
+// Função para renderizar a tabela
 async function renderTable(){
   if(!tbody) return;
   tbody.innerHTML = '';
-  const snapshot = await db.collection('impressoras').orderBy('createdAt','desc').get();
+  
+  const snapshot = await db.collection('impressoras').get();
   snapshot.forEach(doc => {
     const r = doc.data();
     const q = (searchInput?.value||'').toLowerCase();
     const prop = filterSelect?.value || '';
+
     if(prop && r.propriedade!==prop) return;
     if(q && !(r.modelo+' '+r.toner+' '+r.escola).toLowerCase().includes(q)) return;
+
     const tr = document.createElement('tr');
     tr.dataset.id = doc.id;
     tr.innerHTML = `
@@ -96,4 +81,4 @@ searchInput?.addEventListener('input', renderTable);
 filterSelect?.addEventListener('change', renderTable);
 
 // Renderizar tabela ao abrir a página
-if(tbody) renderTable();
+renderTable();
