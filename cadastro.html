@@ -5,28 +5,68 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cadastro de Impressoras</title>
 <link rel="stylesheet" href="styles.css">
-<!-- Firebase compat -->
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
 <script>
+  // Configuração do Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBWMeGoDass7ZZKbsN7ogX7ZKxTTApprtg",
     authDomain: "inventario-impressoras-2ecbd.firebaseapp.com",
     projectId: "inventario-impressoras-2ecbd",
     storageBucket: "inventario-impressoras-2ecbd.firebasestorage.app",
     messagingSenderId: "993025022167",
-    appId: "1:993025022167:web:94c62eac0cfa96ddc1f892"
+    appId: "1:993025022167:web:94c62eac0cfa96ddc1f892",
+    measurementId: "G-459GNX2RGH"
   };
+
+  // Inicializa Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+
+  // Função para salvar impressora
+  async function salvarImpressora(event) {
+    event.preventDefault();
+
+    const modelo = document.getElementById('modelo').value.trim();
+    const toner = document.getElementById('toner').value.trim();
+    const escola = document.getElementById('escola').value.trim();
+    const propriedade = document.getElementById('propriedade').value;
+
+    if (!modelo || !toner || !escola) {
+      alert("Por favor, preencha todos os campos obrigatórios!");
+      return;
+    }
+
+    try {
+      await db.collection("impressoras").add({
+        modelo,
+        toner,
+        escola,
+        propriedade,
+        dataCadastro: new Date().toISOString()
+      });
+      alert("✅ Impressora cadastrada com sucesso!");
+      document.getElementById('formCadastro').reset();
+    } catch (erro) {
+      console.error("Erro ao salvar:", erro);
+      alert("❌ Ocorreu um erro ao salvar a impressora.");
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("formCadastro").addEventListener("submit", salvarImpressora);
+  });
 </script>
-<script src="script.js"></script>
+
 </head>
 <body>
 <header>
   <div class="container" style="display:flex;align-items:center;justify-content:space-between">
     <div>
-      <h1 style="font-size:20px;margin:0">Cadastro de Impressoras</h1>
+      <h1 style="font-size:20px;margin:0">Cadastro de Impressora</h1>
     </div>
     <nav>
       <a href="index.html">Home</a>
@@ -35,9 +75,9 @@
     </nav>
   </div>
 </header>
+
 <main class="container">
   <div class="card">
-    <h2>Cadastro de Impressora</h2>
     <form id="formCadastro">
       <div class="row">
         <div style="flex:1">
@@ -49,6 +89,7 @@
           <input type="text" id="toner" name="toner" required placeholder="Ex: CF244A">
         </div>
       </div>
+
       <div class="row">
         <div style="flex:1">
           <label for="escola">Escola / Setor</label>
@@ -62,16 +103,18 @@
           </select>
         </div>
       </div>
+
       <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
         <button type="submit">Salvar impressora</button>
-        <button type="button" id="limparForm" class="small" style="background:#efefef;color:#111">Limpar</button>
+        <button type="reset" class="small" style="background:#efefef;color:#111">Limpar</button>
         <div class="muted" style="margin-left:8px">*Campos obrigatórios</div>
       </div>
     </form>
   </div>
 </main>
+
 <footer>
-  Feito com ❤️ — Abra este arquivo localmente ou hospede em um servidor.
+  Feito com ❤️ — Abra este arquivo localmente ou hospede em um servidor estático.
 </footer>
 </body>
 </html>
