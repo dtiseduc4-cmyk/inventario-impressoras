@@ -5,22 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inventário de Impressoras</title>
 <link rel="stylesheet" href="styles.css">
-<!-- Firebase -->
+
+<!-- Firebase (Compat) -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
 <script>
-  // Cole aqui sua configuração do Firebase
+  // Configuração do Firebase (versão compat)
   const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    projectId: "SEU_PROJETO",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    messagingSenderId: "SEU_ID",
-    appId: "SEU_APP_ID"
+    apiKey: "AIzaSyBWMeGoDass7ZZKbsN7ogX7ZKxTTApprtg",
+    authDomain: "inventario-impressoras-2ecbd.firebaseapp.com",
+    projectId: "inventario-impressoras-2ecbd",
+    storageBucket: "inventario-impressoras-2ecbd.firebasestorage.app",
+    messagingSenderId: "993025022167",
+    appId: "1:993025022167:web:94c62eac0cfa96ddc1f892",
+    measurementId: "G-459GNX2RGH"
   };
+
+  // Inicialização do Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 </script>
+
 <script src="script.js"></script>
 </head>
 <body>
@@ -37,6 +43,7 @@
     </nav>
   </div>
 </header>
+
 <main class="container">
   <div class="card">
     <h2>Bem-vindo</h2>
@@ -47,6 +54,7 @@
     </div>
   </div>
 </main>
+
 <footer>
   Feito com ❤️ — Abra este arquivo localmente ou hospede em um servidor.
 </footer>
