@@ -3,21 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Impressoras Cadastradas</title>
+<title>Lista de Impressoras</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script>
+  // Cole aqui sua configuração do Firebase
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    projectId: "SEU_PROJETO",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_ID",
+    appId: "SEU_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
 <script src="script.js"></script>
 </head>
 <body>
 <header>
 <div class="container" style="display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <h1 style="font-size:20px;margin:0">Impressoras Cadastradas</h1>
-      </div>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="cadastro.html">Cadastro</a>
-        <a href="lista.html">Impressoras Cadastradas</a>
-      </nav>
+  <div>
+    <h1 style="font-size:20px;margin:0">Impressoras Cadastradas</h1>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="cadastro.html">Cadastro</a>
+    <a href="lista.html">Impressoras Cadastradas</a>
+  </nav>
 </div>
 </header>
 <main class="container">
@@ -47,7 +63,7 @@
 </div>
 </main>
 <footer>
-Feito com ❤️ — Abra este arquivo localmente ou hospede em um servidor estático.
+Feito com ❤️ — Abra este arquivo localmente ou hospede em um servidor.
 </footer>
 </body>
 </html>
