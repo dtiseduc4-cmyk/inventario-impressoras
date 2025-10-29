@@ -11,7 +11,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
 <script>
-  // Configuração do Firebase
+  // =========================
+  // 🔥 Configuração Firebase
+  // =========================
   const firebaseConfig = {
     apiKey: "AIzaSyBWMeGoDass7ZZKbsN7ogX7ZKxTTApprtg",
     authDomain: "inventario-impressoras-2ecbd.firebaseapp.com",
@@ -22,11 +24,23 @@
     measurementId: "G-459GNX2RGH"
   };
 
-  // Inicializa Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // Função para salvar impressora
+  // =========================
+  // 🎨 Função de toast (mensagem visual)
+  // =========================
+  function showMessage(msg, type = "success") {
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // =========================
+  // 🖨️ Função para salvar impressora
+  // =========================
   async function salvarImpressora(event) {
     event.preventDefault();
 
@@ -36,26 +50,41 @@
     const propriedade = document.getElementById('propriedade').value;
 
     if (!modelo || !toner || !escola) {
-      alert("Por favor, preencha todos os campos obrigatórios!");
+      showMessage("⚠️ Preencha todos os campos obrigatórios!", "error");
       return;
     }
 
     try {
+      // Evita duplicações: mesmo toner + escola
+      const querySnapshot = await db.collection("impressoras")
+        .where("escola", "==", escola)
+        .where("toner", "==", toner)
+        .get();
+
+      if (!querySnapshot.empty) {
+        showMessage("❌ Essa escola já possui este modelo de toner cadastrado!", "error");
+        return;
+      }
+
       await db.collection("impressoras").add({
         modelo,
         toner,
         escola,
         propriedade,
-        dataCadastro: new Date().toISOString()
+        dataCadastro: new Date()
       });
-      alert("✅ Impressora cadastrada com sucesso!");
+
+      showMessage("✅ Impressora cadastrada com sucesso!");
       document.getElementById('formCadastro').reset();
     } catch (erro) {
       console.error("Erro ao salvar:", erro);
-      alert("❌ Ocorreu um erro ao salvar a impressora.");
+      showMessage("❌ Ocorreu um erro ao salvar a impressora.", "error");
     }
   }
 
+  // =========================
+  // ⚙️ Inicialização
+  // =========================
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("formCadastro").addEventListener("submit", salvarImpressora);
   });
