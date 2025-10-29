@@ -11,7 +11,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
 <script>
-  // Configuração Firebase
+  // =============================
+  // 🔥 Configuração Firebase
+  // =============================
   const firebaseConfig = {
     apiKey: "AIzaSyBWMeGoDass7ZZKbsN7ogX7ZKxTTApprtg",
     authDomain: "inventario-impressoras-2ecbd.firebaseapp.com",
@@ -27,14 +29,19 @@
 
   let impressoras = [];
 
+  // =============================
+  // 🖨️ Carregar e renderizar tabela
+  // =============================
   async function carregarImpressoras() {
     const tabela = document.querySelector("#tabela tbody");
+    const contador = document.getElementById("contadorImpressoras");
     tabela.innerHTML = "<tr><td colspan='5'>Carregando...</td></tr>";
 
     try {
       const snapshot = await db.collection("impressoras").get();
       impressoras = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderTabela(impressoras);
+      contador.textContent = `Total de impressoras: ${impressoras.length}`;
     } catch (erro) {
       console.error("Erro ao carregar:", erro);
       tabela.innerHTML = "<tr><td colspan='5'>Erro ao carregar dados.</td></tr>";
@@ -43,8 +50,11 @@
 
   function renderTabela(lista) {
     const tabela = document.querySelector("#tabela tbody");
+    const contador = document.getElementById("contadorImpressoras");
+
     if (lista.length === 0) {
       tabela.innerHTML = "<tr><td colspan='5'>Nenhuma impressora cadastrada.</td></tr>";
+      contador.textContent = "Total de impressoras: 0";
       return;
     }
 
@@ -66,6 +76,9 @@
       tabela.appendChild(tr);
     });
 
+    contador.textContent = `Total de impressoras: ${lista.length}`;
+
+    // Botões de exclusão
     document.querySelectorAll(".excluirBtn").forEach(btn => {
       btn.addEventListener("click", async e => {
         const id = e.target.dataset.id;
@@ -77,6 +90,9 @@
     });
   }
 
+  // =============================
+  // 💾 Salvar alterações
+  // =============================
   async function salvarAlteracoes() {
     const linhas = document.querySelectorAll("#tabela tbody tr");
     for (const [i, tr] of linhas.entries()) {
@@ -96,6 +112,9 @@
     carregarImpressoras();
   }
 
+  // =============================
+  // 🔍 Filtro e busca
+  // =============================
   function filtrar() {
     const termo = document.getElementById("search").value.toLowerCase();
     const filtro = document.getElementById("filterPropriedade").value;
@@ -112,10 +131,40 @@
     renderTabela(filtradas);
   }
 
+  // =============================
+  // 🖨️ Impressão (com contador)
+  // =============================
   function imprimirTabela() {
-    window.print();
+    const total = document.getElementById("contadorImpressoras").textContent;
+    const printContent = document.querySelector(".card").innerHTML;
+    const win = window.open('', '', 'width=900,height=700');
+    win.document.write(`
+      <html>
+        <head>
+          <title>Relatório de Impressoras</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h2 { margin-top: 0; }
+            table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+            th { background: #f2f2f2; }
+            p { font-weight: bold; margin-top: 8px; }
+          </style>
+        </head>
+        <body>
+          <h2>Relatório de Impressoras Cadastradas</h2>
+          ${printContent}
+          <p>${total}</p>
+        </body>
+      </html>
+    `);
+    win.document.close();
+    win.print();
   }
 
+  // =============================
+  // ⚙️ Inicialização
+  // =============================
   window.addEventListener("DOMContentLoaded", () => {
     carregarImpressoras();
     document.getElementById("saveBtn").addEventListener("click", salvarAlteracoes);
@@ -158,6 +207,8 @@
         <button id="printBtn" class="small">Imprimir tabela</button>
       </div>
     </div>
+
+    <p id="contadorImpressoras" style="font-weight:600;margin-bottom:10px;color:#0b63d6"></p>
 
     <div style="overflow:auto">
       <table id="tabela">
