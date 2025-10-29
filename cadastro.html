@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Impressoras</title>
+<link rel="stylesheet" href="styles.css">
+<script src="script.js"></script>
+</head>
+<body>
+<header>
+<div class="container" style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <h1 style="font-size:20px;margin:0">Cadastro de Impressora</h1>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="cadastro.html">Cadastro</a>
+        <a href="lista.html">Impressoras Cadastradas</a>
+      </nav>
+</div>
+</header>
+<main class="container">
+<div class="card">
+<form id="formCadastro">
+<div class="row">
+<div style="flex:1">
+<label for="modelo">Modelo da impressora</label>
+<input type="text" id="modelo" name="modelo" required placeholder="Ex: HP LaserJet Pro M15">
+</div>
+<div style="flex:1">
+<label for="toner">Modelo de toner</label>
+<input type="text" id="toner" name="toner" required placeholder="Ex: CF244A">
+</div>
+</div>
+<div class="row">
+<div style="flex:1">
+<label for="escola">Escola / Setor</label>
+<input type="text" id="escola" name="escola" required placeholder="Ex: Escola Municipal Centro">
+</div>
+<div style="width:220px">
+<label for="propriedade">É alugada ou própria?</label>
+<select id="propriedade" name="propriedade">
+<option value="Propria">Própria</option>
+<option value="Alugada">Alugada</option>
+</select>
+</div>
+</div>
+<div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+<button type="submit">Salvar impressora</button>
+<button type="reset" class="small" style="background:#efefef;color:#111">Limpar</button>
+<div class="muted" style="margin-left:8px">*Campos obrigatórios</div>
+</div>
+</form>
+</div>
+</main>
+<footer>
+Feito com ❤️ — Abra este arquivo localmente ou hospede em um servidor estático.
+</footer>
+</body>
+</html>
