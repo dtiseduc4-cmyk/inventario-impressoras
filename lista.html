@@ -5,52 +5,179 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Impressoras Cadastradas</title>
 <link rel="stylesheet" href="styles.css">
-<!-- Firebase compat -->
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
 <script>
+  // Configuração Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBWMeGoDass7ZZKbsN7ogX7ZKxTTApprtg",
     authDomain: "inventario-impressoras-2ecbd.firebaseapp.com",
     projectId: "inventario-impressoras-2ecbd",
     storageBucket: "inventario-impressoras-2ecbd.firebasestorage.app",
     messagingSenderId: "993025022167",
-    appId: "1:993025022167:web:94c62eac0cfa96ddc1f892"
+    appId: "1:993025022167:web:94c62eac0cfa96ddc1f892",
+    measurementId: "G-459GNX2RGH"
   };
+
   firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  let impressoras = [];
+
+  async function carregarImpressoras() {
+    const tabela = document.querySelector("#tabela tbody");
+    tabela.innerHTML = "<tr><td colspan='5'>Carregando...</td></tr>";
+
+    try {
+      const snapshot = await db.collection("impressoras").get();
+      impressoras = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderTabela(impressoras);
+    } catch (erro) {
+      console.error("Erro ao carregar:", erro);
+      tabela.innerHTML = "<tr><td colspan='5'>Erro ao carregar dados.</td></tr>";
+    }
+  }
+
+  function renderTabela(lista) {
+    const tabela = document.querySelector("#tabela tbody");
+    if (lista.length === 0) {
+      tabela.innerHTML = "<tr><td colspan='5'>Nenhuma impressora cadastrada.</td></tr>";
+      return;
+    }
+
+    tabela.innerHTML = "";
+    lista.forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td contenteditable="true" data-field="modelo">${item.modelo || ""}</td>
+        <td contenteditable="true" data-field="toner">${item.toner || ""}</td>
+        <td contenteditable="true" data-field="escola">${item.escola || ""}</td>
+        <td>
+          <select data-field="propriedade">
+            <option value="Propria" ${item.propriedade === "Propria" ? "selected" : ""}>Própria</option>
+            <option value="Alugada" ${item.propriedade === "Alugada" ? "selected" : ""}>Alugada</option>
+          </select>
+        </td>
+        <td><button class="small excluirBtn" data-id="${item.id}">Excluir</button></td>
+      `;
+      tabela.appendChild(tr);
+    });
+
+    document.querySelectorAll(".excluirBtn").forEach(btn => {
+      btn.addEventListener("click", async e => {
+        const id = e.target.dataset.id;
+        if (confirm("Tem certeza que deseja excluir esta impressora?")) {
+          await db.collection("impressoras").doc(id).delete();
+          carregarImpressoras();
+        }
+      });
+    });
+  }
+
+  async function salvarAlteracoes() {
+    const linhas = document.querySelectorAll("#tabela tbody tr");
+    for (const [i, tr] of linhas.entries()) {
+      const id = impressoras[i]?.id;
+      if (!id) continue;
+
+      const modelo = tr.querySelector('[data-field="modelo"]').innerText.trim();
+      const toner = tr.querySelector('[data-field="toner"]').innerText.trim();
+      const escola = tr.querySelector('[data-field="escola"]').innerText.trim();
+      const propriedade = tr.querySelector('[data-field="propriedade"]').value;
+
+      await db.collection("impressoras").doc(id).update({
+        modelo, toner, escola, propriedade
+      });
+    }
+    alert("✅ Alterações salvas com sucesso!");
+    carregarImpressoras();
+  }
+
+  function filtrar() {
+    const termo = document.getElementById("search").value.toLowerCase();
+    const filtro = document.getElementById("filterPropriedade").value;
+
+    const filtradas = impressoras.filter(item => {
+      const combinaTexto =
+        item.modelo?.toLowerCase().includes(termo) ||
+        item.toner?.toLowerCase().includes(termo) ||
+        item.escola?.toLowerCase().includes(termo);
+      const combinaPropriedade = filtro ? item.propriedade === filtro : true;
+      return combinaTexto && combinaPropriedade;
+    });
+
+    renderTabela(filtradas);
+  }
+
+  function imprimirTabela() {
+    window.print();
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    carregarImpressoras();
+    document.getElementById("saveBtn").addEventListener("click", salvarAlteracoes);
+    document.getElementById("search").addEventListener("input", filtrar);
+    document.getElementById("filterPropriedade").addEventListener("change", filtrar);
+    document.getElementById("printBtn").addEventListener("click", imprimirTabela);
+  });
 </script>
-<script src="script.js"></script>
+
 </head>
 <body>
 <header>
-  <h1>Impressoras Cadastradas</h1>
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <h1 style="font-size:20px;margin:0">Impressoras Cadastradas</h1>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="cadastro.html">Cadastro</a>
+      <a href="lista.html">Impressoras Cadastradas</a>
+    </nav>
+  </div>
 </header>
 
 <main class="container">
-  <div class="filtros">
-    <label>Filtrar por Escola:</label>
-    <input type="text" id="filtroEscola" placeholder="Digite o nome da escola">
-    <label>Filtrar por Toner:</label>
-    <input type="text" id="filtroToner" placeholder="Digite o modelo do toner">
-  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div>
+        <h2>Lista de Impressoras</h2>
+        <div class="muted">Edite diretamente na tabela e clique em "Salvar alterações".</div>
+      </div>
+      <div class="controls">
+        <input id="search" class="search" placeholder="Pesquisar por modelo, toner ou escola">
+        <select id="filterPropriedade" class="small">
+          <option value="">Todas</option>
+          <option value="Propria">Próprias</option>
+          <option value="Alugada">Alugadas</option>
+        </select>
+        <button id="saveBtn" class="small">Salvar alterações</button>
+        <button id="printBtn" class="small">Imprimir tabela</button>
+      </div>
+    </div>
 
-  <table border="1" width="100%">
-    <thead>
-      <tr>
-        <th>Modelo</th>
-        <th>Toner</th>
-        <th>Escola</th>
-        <th>Propriedade</th>
-        <th>Data de Cadastro</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="lista"></tbody>
-  </table>
+    <div style="overflow:auto">
+      <table id="tabela">
+        <thead>
+          <tr>
+            <th>Modelo</th>
+            <th>Toner</th>
+            <th>Escola/Setor</th>
+            <th>Propriedade</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 </main>
 
 <footer>
-  Feito com ❤️
+  Feito com ❤️ — Abra este arquivo localmente ou hospede em um servidor estático.
 </footer>
 </body>
 </html>
