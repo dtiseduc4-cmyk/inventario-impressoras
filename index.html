@@ -1,54 +1,92 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inventário de Impressoras</title>
-<link rel="stylesheet" href="styles.css">
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-<script>
-  // Cole aqui sua configuração do Firebase
-  const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    projectId: "SEU_PROJETO",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    messagingSenderId: "SEU_ID",
-    appId: "SEU_APP_ID"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
-<script src="script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Impressoras</title>
+  <script type="module">
+    // Importa o Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+
+    // Configuração do Firebase (substitua pelos seus dados)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBWMeGoDass7ZZKbsN7ogX7ZKxTTApprtg",
+      authDomain: "inventario-impressoras-2ecbd.firebaseapp.com",
+      projectId: "inventario-impressoras-2ecbd",
+      storageBucket: "inventario-impressoras-2ecbd.appspot.com",
+      messagingSenderId: "993025022167",
+      appId: "1:993025022167:web:94c62eac0cfa96ddc1f892",
+      measurementId: "G-459GNX2RGH"
+    };
+
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Função para adicionar impressora
+    async function adicionarImpressora() {
+      const nome = document.getElementById("nome").value;
+      const modelo = document.getElementById("modelo").value;
+
+      if (!nome || !modelo) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      await addDoc(collection(db, "impressoras"), {
+        nome: nome,
+        modelo: modelo,
+        dataCadastro: new Date()
+      });
+
+      document.getElementById("nome").value = "";
+      document.getElementById("modelo").value = "";
+      listarImpressoras();
+    }
+
+    // Função para listar impressoras
+    async function listarImpressoras() {
+      const lista = document.getElementById("lista");
+      lista.innerHTML = ""; // limpa a lista
+
+      const querySnapshot = await getDocs(collection(db, "impressoras"));
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const li = document.createElement("li");
+        li.textContent = `${data.nome} - ${data.modelo} (${data.dataCadastro.toDate().toLocaleString()})`;
+
+        // Botão excluir
+        const btnExcluir = document.createElement("button");
+        btnExcluir.textContent = "Excluir";
+        btnExcluir.style.marginLeft = "10px";
+        btnExcluir.onclick = async () => {
+          await deleteDoc(doc(db, "impressoras", docSnap.id));
+          listarImpressoras();
+        };
+
+        li.appendChild(btnExcluir);
+        lista.appendChild(li);
+      });
+    }
+
+    // Chama a listagem ao carregar a página
+    window.onload = listarImpressoras;
+    window.adicionarImpressora = adicionarImpressora;
+  </script>
 </head>
 <body>
-<header>
-  <div class="container" style="display:flex;align-items:center;justify-content:space-between">
-    <div>
-      <h1 style="font-size:20px;margin:0">Inventário de Impressoras</h1>
-      <div style="font-size:13px;opacity:0.95">Gerencie impressoras, toners e localização - online via Firebase</div>
-    </div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="cadastro.html">Cadastro</a>
-      <a href="lista.html">Impressoras Cadastradas</a>
-    </nav>
-  </div>
-</header>
-<main class="container">
-  <div class="card">
-    <h2>Bem-vindo</h2>
-    <p class="muted">Use o menu para cadastrar impressoras e visualizar as impressoras já registradas.</p>
-    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
-      <a class="tag" href="cadastro.html">Cadastrar nova impressora</a>
-      <a class="tag" href="lista.html">Ver impressoras cadastradas</a>
-    </div>
-  </div>
-</main>
-<footer>
-  Feito com ❤️ — Abra este arquivo localmente ou hospede em um servidor.
-</footer>
+  <h1>Cadastro de Impressoras</h1>
+
+  <label>Nome da Impressora: </label>
+  <input type="text" id="nome" />
+  <br><br>
+  <label>Modelo: </label>
+  <input type="text" id="modelo" />
+  <br><br>
+  <button onclick="adicionarImpressora()">Cadastrar Impressora</button>
+
+  <h2>Lista de Impressoras</h2>
+  <ul id="lista"></ul>
 </body>
 </html>
