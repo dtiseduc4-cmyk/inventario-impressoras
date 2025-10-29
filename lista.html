@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lista de Impressoras</title>
+<title>Impressoras Cadastradas</title>
 <link rel="stylesheet" href="styles.css">
 <!-- Firebase compat -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-  <script src="script_lista.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyBWMeGoDass7ZZKbsN7ogX7ZKxTTApprtg",
@@ -19,51 +18,39 @@
     appId: "1:993025022167:web:94c62eac0cfa96ddc1f892"
   };
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
 </script>
-<script src="script_lista.js"></script>
+<script src="script.js"></script>
 </head>
 <body>
 <header>
-<div class="container" style="display:flex;align-items:center;justify-content:space-between">
-  <div>
-    <h1 style="font-size:20px;margin:0">Impressoras Cadastradas</h1>
-  </div>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="cadastro.html">Cadastro</a>
-    <a href="lista.html">Impressoras Cadastradas</a>
-  </nav>
-</div>
+  <h1>Impressoras Cadastradas</h1>
 </header>
+
 <main class="container">
-<div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-<div>
-<h2>Lista de Impressoras</h2>
-<div class="muted">Edite diretamente na tabela e clique em "Salvar alterações".</div>
-</div>
-<div class="controls">
-<input id="search" class="search" placeholder="Pesquisar por modelo, toner ou escola">
-<select id="filterPropriedade" class="small">
-<option value="">Todas</option>
-<option value="Propria">Próprias</option>
-<option value="Alugada">Alugadas</option>
-</select>
-<button id="saveBtn" class="small">Salvar alterações</button>
-<button id="printBtn" class="small">Imprimir tabela</button>
-</div>
-</div>
-<div style="overflow:auto">
-<table id="tabela">
-<thead><tr><th>Modelo</th><th>Toner</th><th>Escola/Setor</th><th>Propriedade</th><th>Ações</th></tr></thead>
-<tbody></tbody>
-</table>
-</div>
-</div>
+  <div class="filtros">
+    <label>Filtrar por Escola:</label>
+    <input type="text" id="filtroEscola" placeholder="Digite o nome da escola">
+    <label>Filtrar por Toner:</label>
+    <input type="text" id="filtroToner" placeholder="Digite o modelo do toner">
+  </div>
+
+  <table border="1" width="100%">
+    <thead>
+      <tr>
+        <th>Modelo</th>
+        <th>Toner</th>
+        <th>Escola</th>
+        <th>Propriedade</th>
+        <th>Data de Cadastro</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="lista"></tbody>
+  </table>
 </main>
+
 <footer>
-Feito com ❤️ — Abra este arquivo localmente ou hospede em um servidor.
+  Feito com ❤️
 </footer>
 </body>
 </html>
